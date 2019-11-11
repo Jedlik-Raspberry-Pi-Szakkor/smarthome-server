@@ -8,6 +8,7 @@ broadcastServer.bind(BROADCAST_PORT, "0.0.0.0")
 
 broadcastServer.on('listening', function() {
     var address = broadcastServer.address();
+    broadcastServer.setBroadcast(true);
    console.log('UDP Server listening on ' + address.address + ':' + address.port);
 });
   
@@ -21,7 +22,7 @@ broadcastServer.on('listening', function() {
     }
 });*/
 
-broadcastServer.setBroadcast(true);
+
 setInterval(()=>{
     broadcastServer.send(new Uint8Array([0, 1, 2, 3]), BROADCAST_PORT, "255.255.255.255");
 }, 10*1000);
