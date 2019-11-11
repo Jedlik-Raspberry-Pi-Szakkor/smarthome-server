@@ -11,7 +11,7 @@ broadcastServer.on('listening', function() {
    console.log('UDP Server listening on ' + address.address + ':' + address.port);
 });
   
-broadcastServer.on('message', function(message, remote) {
+/*broadcastServer.on('message', function(message, remote) {
     console.log(remote.address + ':' + remote.port +' - ' + message);
     if (message[0] == 0 &&
         message[1] == 1 &&
@@ -19,7 +19,12 @@ broadcastServer.on('message', function(message, remote) {
         message[3] == 3){
     broadcastServer.send(new Uint8Array([0, 1, 2, 3]), remote.port, remote.address);
     }
-});
+});*/
+
+broadcastServer.setBroadcast(true);
+setInterval(()=>{
+    broadcastServer.send(new Uint8Array([0, 1, 2, 3]), BROADCAST_PORT, "255.255.255.255");
+}, 10*1000);
 
 c.on("connect", ()=>{
     console.log("Connected to MQTT server");
