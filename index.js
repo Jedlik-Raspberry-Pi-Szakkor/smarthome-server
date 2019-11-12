@@ -2,9 +2,13 @@ const BROADCAST_PORT = 2718;
 
 const mqtt = require("mqtt")
 const dgram = require("dgram")
+const onoff = require("onoff")
+
+//Create server for discovert
 const broadcastServer = dgram.createSocket('udp4');
+broadcastServer.bind(BROADCAST_PORT, "0.0.0.0") //Bind to all interfaces
+//Connecting to MQTT server
 const c = mqtt.connect("mqtt://127.0.0.1");
-broadcastServer.bind(BROADCAST_PORT, "0.0.0.0")
 
 broadcastServer.on('listening', function() {
     var address = broadcastServer.address();
@@ -22,7 +26,7 @@ broadcastServer.on('listening', function() {
     }
 });*/
 
-
+//Send a broadcast discovery message every 10 seconds
 setInterval(()=>{
     broadcastServer.send(new Uint8Array([0, 1, 2, 3]), BROADCAST_PORT, "255.255.255.255");
 }, 10*1000);
@@ -32,19 +36,60 @@ c.on("connect", ()=>{
     c.subscribe("#");
 })
 
+const NAPPALI = new onoff.Gpio(17, "out");
+
+/**
+ * Turns the lamp in Nappali on or off
+ * @param {boolean} isOn 
+ */
+function turnNAPPALI(isOn) {
+    NAPPALI.writeSync(isOn ? 1 : 0);
+}
+
+const KONYHA = new onoff.Gpio(27, "out");
+
+/**
+ * Turns the lamp in KONYHA on or off
+ * @param {boolean} isOn 
+ */
+function turnKONYHA(isOn) {
+    KONYHA.writeSync(isOn ? 1 : 0);
+}
+
+const HALOSZOBA = new onoff.Gpio(22, "out");
+
+/**
+ * Turns the lamp in HALOSZOBA on or off
+ * @param {boolean} isOn 
+ */
+function turnHALOSZOBA(isOn) {
+    HALOSZOBA.writeSync(isOn ? 1 : 0);
+}
+
+const VENDEGSZOBA = new onoff.Gpio(23, "out");
+
+/**
+ * Turns the lamp in VENDEGSZOBA on or off
+ * @param {boolean} isOn 
+ */
+function turnVENDEGSZOBA(isOn) {
+    VENDEGSZOBA.writeSync(isOn ? 1 : 0);
+}
+
+
 c.on("message", (topic, message)=>{
     switch(topic){
         case "smarthome/lamp/Nappali":
-            
+            turnNAPPALI(message.buffer[0] != 0);
         break;
         case "smarthome/lamp/Konyha":
-            
+            turnKONYHA(message.buffer[0] != 0);
         break;
         case "smarthome/lamp/Haloszoba":
-
+            turnHALOSZOBA(message.buffer[0] != 0);
         break;
         case "smarthome/lamp/Vendegszoba":
-
+            turnVENDEGSZOBA(message.buffer[0] != 0);
         break;
     }
 })
