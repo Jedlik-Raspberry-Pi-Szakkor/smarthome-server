@@ -82,19 +82,19 @@ function turnVENDEGSZOBA(isOn) {
 
 
 c.on("message", (topic, message)=>{
-    console.log(message.buffer)
+    
     switch(topic){
         case "smarthome/lamp/Nappali":
-            turnNAPPALI(message.buffer[0] != 0);
+            turnNAPPALI(message.readUInt8(0) != 0);
         break;
         case "smarthome/lamp/Konyha":
-            turnKONYHA(message.buffer[0] != 0);
+            turnKONYHA(message.readUInt8(0) != 0);
         break;
         case "smarthome/lamp/Haloszoba":
-            turnHALOSZOBA(message.buffer[0] != 0);
+            turnHALOSZOBA(message.readUInt8(0) != 0);
         break;
         case "smarthome/lamp/Vendegszoba":
-            turnVENDEGSZOBA(message.buffer[0] != 0);
+            turnVENDEGSZOBA(message.readUInt8(0) != 0);
         break;
     }
 })
