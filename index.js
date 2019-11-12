@@ -81,8 +81,8 @@ function turnVENDEGSZOBA(isOn) {
     VENDEGSZOBA.writeSync(isOn ? 1 : 0);
 }
 
-const trigger = new Gpio(25, {mode: Gpio.OUTPUT});
-const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
+const trigger = new pigpio(25, {mode: Gpio.OUTPUT});
+const echo = new pigpio(24, {mode: Gpio.INPUT, alert: true});
 
 trigger.digitalWrite(0); // Make sure trigger is low
 
