@@ -43,6 +43,7 @@ const NAPPALI = new onoff.Gpio(17, "out");
  * @param {boolean} isOn 
  */
 function turnNAPPALI(isOn) {
+    console.log("NAPPALI: " + isOn);
     NAPPALI.writeSync(isOn ? 1 : 0);
 }
 
@@ -53,6 +54,7 @@ const KONYHA = new onoff.Gpio(27, "out");
  * @param {boolean} isOn 
  */
 function turnKONYHA(isOn) {
+    console.log("KONYHA: " + isOn);
     KONYHA.writeSync(isOn ? 1 : 0);
 }
 
@@ -63,6 +65,7 @@ const HALOSZOBA = new onoff.Gpio(22, "out");
  * @param {boolean} isOn 
  */
 function turnHALOSZOBA(isOn) {
+    console.log("HALOSZOBA: " + isOn);
     HALOSZOBA.writeSync(isOn ? 1 : 0);
 }
 
@@ -73,6 +76,7 @@ const VENDEGSZOBA = new onoff.Gpio(23, "out");
  * @param {boolean} isOn 
  */
 function turnVENDEGSZOBA(isOn) {
+    console.log("VENDEGSZOBA: " + isOn);
     VENDEGSZOBA.writeSync(isOn ? 1 : 0);
 }
 
