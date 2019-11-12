@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "mqtt": "^3.0.0",
-    "onoff": "^5.0.0"
+    "onoff": "^5.0.0",
+    "pigpio": "^2.0.1"
   }
 }
