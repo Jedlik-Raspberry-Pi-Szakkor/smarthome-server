@@ -3,6 +3,7 @@ const BROADCAST_PORT = 2718;
 const mqtt = require("mqtt")
 const dgram = require("dgram")
 const onoff = require("onoff")
+const pigpio = require("pigpio").Gpio;
 
 //Create server for discovert
 const broadcastServer = dgram.createSocket('udp4');
@@ -80,39 +81,31 @@ function turnVENDEGSZOBA(isOn) {
     VENDEGSZOBA.writeSync(isOn ? 1 : 0);
 }
 
-const RADAR_OUT = new onoff.Gpio(25, "out");
-const RADAR_IN = new onoff.Gpio(24, "in");
+const trigger = new Gpio(25, {mode: Gpio.OUTPUT});
+const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
 
-function meassureDistance(){
-    console.log("Meassuring")
-    RADAR_OUT.writeSync(1)
-    setTimeout(() => {
-        RADAR_OUT.writeSync(0);
-        console.log("Sent sync signal")
-    }, 0.001);
-    
+trigger.digitalWrite(0); // Make sure trigger is low
 
-}
+const watchHCSR04 = () => {
+  let startTick;
 
-let startTime;
-
-RADAR_IN.watch((err, val)=>{
-    console.log(err, val);
-    if(val == 1){
-        startTime = new Date();
-        console.log("Updated time");
+  echo.on('alert', (level, tick) => {
+    if (level == 1) {
+      startTick = tick;
+    } else {
+      const endTick = tick;
+      const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
+      console.log(diff / 2 / MICROSECDONDS_PER_CM);
     }
-    if(val == 0){
-        const currentTime = new Date();
-        const distance = (currentTime-startTime)/1000*17150;
-        console.log(distance);
-    }
-});
+  });
+};
 
-RADAR_OUT.writeSync(0);
+watchHCSR04();
+
+// Trigger a distance measurement once per second
 setInterval(() => {
-    meassureDistance()
-}, 2000);
+  trigger.trigger(10, 1); // Set trigger high for 10 microseconds
+}, 1000);
 
 c.on("message", (topic, message)=>{
     
