@@ -116,12 +116,12 @@ const watchHCSR04 = () => {
   });
 };
 
-watchHCSR04();
+//watchHCSR04();
 
 // Trigger a distance measurement once per second
-setInterval(() => {
+/*setInterval(() => {
   trigger.trigger(10, 1); // Set trigger high for 10 microseconds
-}, 1000);
+}, 1000);*/
 
 c.on("message", (topic, message)=>{
     
@@ -141,5 +141,54 @@ c.on("message", (topic, message)=>{
         case "smarthome/alarms":
             alarms = message.toString().split(";").map(a=>new Date(a*1000));
         break;
+        case "smarthome/routines":
+            const byte = message.readInt8(0);
+            doRoutine(byte);
+        break;
     }
 })
+
+function changeLamp(room, isOn){
+    c.publish("smarthome/lamp/" + room, new Buffer([isOn ? 1 : 0]), {
+        retain: true,
+        qos: 0
+    });
+}
+
+function changeAlarm(isOn){
+    c.publish("smarthome/alarm/on", new Buffer([isOn ? 1 : 0]), {
+        retain: true,
+        qos: 0
+    });
+}
+
+
+function doRoutine(byte){
+    switch (byte) {
+        case 1:
+            changeLamp("Haloszoba", true);
+            changeAlarm(false);
+            break;
+        case 2:
+                changeLamp("Haloszoba", false);
+                changeLamp("Nappali", false);
+                changeLamp("Konyha", false);
+                changeLamp("Vendegszoba", false);
+                changeAlarm(true);
+                break;
+        case 3:
+            changeLamp("Haloszoba", false);
+            changeLamp("Nappali", false);
+            changeLamp("Konyha", false);
+            changeLamp("Vendegszoba", false);
+            changeAlarm(false);
+            break;
+        case 4:
+                changeLamp("Haloszoba", false);
+                changeLamp("Nappali", false);
+                changeLamp("Konyha", true);
+                changeLamp("Vendegszoba", false);
+                changeAlarm(false);
+                break;
+    }
+}
