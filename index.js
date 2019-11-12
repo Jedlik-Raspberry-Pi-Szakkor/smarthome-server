@@ -80,6 +80,33 @@ function turnVENDEGSZOBA(isOn) {
     VENDEGSZOBA.writeSync(isOn ? 1 : 0);
 }
 
+const RADAR_OUT = new onoff.Gpio(25, "out");
+const RADAR_IN = new onoff.Gpio(24, "in");
+
+function meassureDistance(){
+    RADAR_OUT.writeSync(1)
+    setTimeout(() => {
+        RADAR_OUT.writeSync(0);
+    }, 1);
+    let startTime;
+    const a = (err, val)=>{
+        if(val == 1){
+            startTime = new Date();
+        }
+        if(val == 0){
+            const currentTime = new Date();
+            const distance = (currentTime-startTime)/1000*17150;
+            console.log(distance);
+            RADAR_IN.unwatch(a);
+        }
+    }
+    RADAR_IN.watch(a);
+
+}
+
+setInterval(() => {
+    meassureDistance()
+}, 2000);
 
 c.on("message", (topic, message)=>{
     
