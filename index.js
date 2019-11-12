@@ -84,14 +84,17 @@ const RADAR_OUT = new onoff.Gpio(25, "out");
 const RADAR_IN = new onoff.Gpio(24, "in");
 
 function meassureDistance(){
+    console.log("Meassuring")
     RADAR_OUT.writeSync(1)
     setTimeout(() => {
         RADAR_OUT.writeSync(0);
+        console.log("Sent sync signal")
     }, 1);
     let startTime;
     const a = (err, val)=>{
         if(val == 1){
             startTime = new Date();
+            console.log("Updated time");
         }
         if(val == 0){
             const currentTime = new Date();
@@ -104,6 +107,7 @@ function meassureDistance(){
 
 }
 
+RADAR_OUT.writeSync(0);
 setInterval(() => {
     meassureDistance()
 }, 2000);
