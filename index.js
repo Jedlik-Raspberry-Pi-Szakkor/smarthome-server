@@ -81,6 +81,8 @@ function turnVENDEGSZOBA(isOn) {
     VENDEGSZOBA.writeSync(isOn ? 1 : 0);
 }
 
+const MICROSECDONDS_PER_CM = 1e6/34321;
+
 const trigger = new pigpio(25, {mode: pigpio.OUTPUT});
 const echo = new pigpio(24, {mode: pigpio.INPUT, alert: true});
 
