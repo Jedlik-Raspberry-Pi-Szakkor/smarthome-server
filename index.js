@@ -89,23 +89,25 @@ function meassureDistance(){
     setTimeout(() => {
         RADAR_OUT.writeSync(0);
         console.log("Sent sync signal")
-    }, 1);
-    let startTime;
-    const a = (err, val)=>{
-        if(val == 1){
-            startTime = new Date();
-            console.log("Updated time");
-        }
-        if(val == 0){
-            const currentTime = new Date();
-            const distance = (currentTime-startTime)/1000*17150;
-            console.log(distance);
-            RADAR_IN.unwatch(a);
-        }
-    }
-    RADAR_IN.watch(a);
+    }, 0.001);
+    
 
 }
+
+let startTime;
+
+RADAR_IN.watch((err, val)=>{
+    console.log(err, val);
+    if(val == 1){
+        startTime = new Date();
+        console.log("Updated time");
+    }
+    if(val == 0){
+        const currentTime = new Date();
+        const distance = (currentTime-startTime)/1000*17150;
+        console.log(distance);
+    }
+});
 
 RADAR_OUT.writeSync(0);
 setInterval(() => {
