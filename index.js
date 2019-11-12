@@ -82,6 +82,7 @@ function turnVENDEGSZOBA(isOn) {
 
 
 c.on("message", (topic, message)=>{
+    console.log(message.buffer)
     switch(topic){
         case "smarthome/lamp/Nappali":
             turnNAPPALI(message.buffer[0] != 0);
