@@ -88,6 +88,17 @@ const echo = new pigpio(24, {mode: pigpio.INPUT, alert: true});
 
 trigger.digitalWrite(0); // Make sure trigger is low
 
+let alarms = [];
+
+function startAlarm(){
+    alarms.push(new Date());
+    
+    c.publish("smarthome/alarms", alarms.map(a=>(a-0)/1000).join(";"), {
+        qos: 0,
+        retain: true
+    });
+}
+
 const watchHCSR04 = () => {
   let startTick;
 
@@ -97,7 +108,10 @@ const watchHCSR04 = () => {
     } else {
       const endTick = tick;
       const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
-      console.log(diff / 2 / MICROSECDONDS_PER_CM);
+      const distance = diff / 2 / MICROSECDONDS_PER_CM;
+      if (distance < 15) {
+          startAlarm();
+      }
     }
   });
 };
@@ -123,6 +137,9 @@ c.on("message", (topic, message)=>{
         break;
         case "smarthome/lamp/Vendegszoba":
             turnVENDEGSZOBA(message.readUInt8(0) != 0);
+        break;
+        case "smarthome/alarms":
+            alarms = message.toString().split(";").map(a=>new Date(a*1000));
         break;
     }
 })
